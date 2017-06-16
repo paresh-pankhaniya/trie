@@ -13,7 +13,7 @@ public class Driver {
 		System.out.println("enter string");
 		Trie tr = new Trie();
 		Trienode root = new Trienode();
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < 5; i++) {
 			String str = sc.next();
 			if (!tr.search(root, str)) {
 				tr.insert(root, str);
@@ -22,6 +22,10 @@ public class Driver {
 			}
 		}
 		tr.printTrie(root,"");
+		//System.out.println(tr.search(root, "ab"));
+		//tr.delete(root, "ab");
+		//System.out.println(tr.search(root, "ab"));
+		//tr.printTrie(root, "");
 	}
 }
 
@@ -67,8 +71,30 @@ class Trie {
 				return false;
 			}
 			temp = temp.hm.get(ch);
-			
 		}
 		return (temp != null && temp.isLeaf);
 	}
+	void delete(Trienode root,String str) {
+		System.out.println("inside delete :"+str);
+		deleteTrinode(root,str,0);
+	}
+
+	private boolean deleteTrinode(Trienode root, String str, int i) {
+		if(root == null) {
+			return false;
+		}
+		if(str.length()==i) {
+			if(!root.isLeaf) {
+				return false;
+			}
+			root.isLeaf = false;
+			return (root.hm.size()==0);
+		}
+		boolean tr = deleteTrinode(root.hm.get(str.charAt(i)), str, i+1);
+		if(tr){
+			root.hm.remove(str.charAt(i));
+			return (root.hm.size()==0);
+		}
+		return false;
+	}	
 }
