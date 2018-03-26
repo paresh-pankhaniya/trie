@@ -1,100 +1,77 @@
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
 
-class Trienode {
-	HashMap<Character, Trienode> hm = new HashMap<>();
-	boolean isLeaf;
+public class Trie {
+    private static TrieNode root;
+    public static void main(String arg[]) {
+        String key[] = {"the","there","their","a","apple","by","bye"};
+        int keyLen = key.length;
+        root = getNode();
+        for(int i = 0;i < keyLen; i++) {
+            insert(root,key[i]);
+        }
+        searchKey(root,"their");
+        searchKey(root,"aaa");
+        searchKey(root,"a");
+        searchKey(root,"bye");
+        System.out.println("**************************************");
+        printTrie(root,"");
+    }
+    private static boolean insert(TrieNode root,String str) {
+        TrieNode newRoot = root;
+        for(int it = 0;it < str.length(); it++ ) {
+            char ch = str.charAt(it);
+            if(!newRoot.child.containsKey(ch)) {
+                TrieNode childNode = getNode();
+                newRoot.child.put(ch,childNode);
+            }
+            newRoot = newRoot.child.get(ch);
+        }
+        newRoot.isLeaf = true;
+        return true;
+    }
+    private static TrieNode getNode() {
+        TrieNode newNode = new TrieNode();
+        newNode.child = new HashMap<Character,TrieNode>();
+        return newNode;
+    }
+    private static void searchKey(TrieNode root,String key) {
+        TrieNode newRoot = root;
+        if(root == null) {
+            System.out.println("trie does'not exist");
+        }
+        for(int i = 0;i < key.length();i++) {
+            char ch = key.charAt(i);
+            if(!newRoot.child.containsKey(ch)) {
+                System.out.println("key "+ key +" does'not exist");
+                return;
+            }
+            newRoot = newRoot.child.get(ch);
+        }
+        if(newRoot != null && newRoot.isLeaf) {
+            System.out.println("trie contains key ="+key);
+        } else {
+            System.out.println("key "+ key +" does'not exist");
+        }
+    }
+    public static void printTrie(TrieNode root, String str) {
+        TrieNode temp = root;
+        if(temp == null) return;
+        
+        for(Map.Entry<Character, TrieNode> entry : temp.child.entrySet()){
+            //System.out.print(entry.getKey());
+            if(temp != null) {
+                str+=entry.getKey();
+                if(entry.getValue().isLeaf ) {
+                    System.out.println(str);
+                }
+                printTrie(entry.getValue(), str);
+                str = str.substring(0,str.length()-1);
+            }
+        }
+    }
 }
-
-public class Driver {
-	public static void main(String[] arg) {
-		Scanner sc = new Scanner(System.in);
-		System.out.println("enter string");
-		Trie tr = new Trie();
-		Trienode root = new Trienode();
-		for (int i = 0; i < 5; i++) {
-			String str = sc.next();
-			if (!tr.search(root, str)) {
-				tr.insert(root, str);
-			} else {
-				System.out.println("String :" + str + " do exists");
-			}
-		}
-		tr.printTrie(root,"");
-		//System.out.println(tr.search(root, "ab"));
-		//tr.delete(root, "ab");
-		//System.out.println(tr.search(root, "ab"));
-		//tr.printTrie(root, "");
-	}
-}
-
-class Trie {
-
-	void insert(Trienode root, String str) {
-		System.out.println("String ' "+str+" 'is  not found,insert is called");
-		Trienode temp = root;
-		for(char ch:str.toCharArray()){
-			if(!temp.hm.containsKey(ch)) {
-				temp.hm.put(ch, new Trienode());
-			}
-			temp = temp.hm.get(ch);
-		}
-		temp.isLeaf = true;
-	}
-
-	public void printTrie(Trienode root, String str) {
-		Trienode temp = root;
-		if(temp == null) return;
-		
-		for(Map.Entry<Character, Trienode> entry : temp.hm.entrySet()){
-			//System.out.print(entry.getKey());
-			if(temp != null) {
-				str+=entry.getKey();
-				if(entry.getValue().isLeaf ) {
-					System.out.println(str);
-				}
-				printTrie(entry.getValue(), str);
-				str = str.substring(0,str.length()-1);
-			}
-		}
-	}
-
-	boolean search(Trienode root, String str) {
-		System.out.println("Searching for String ' "+str+" '");
-		if(root.hm.size() == 0) {
-			return false;
-		}
-		Trienode temp = root;
-		for(char ch:str.toCharArray()) {
-			if(!temp.hm.containsKey(ch)) {
-				return false;
-			}
-			temp = temp.hm.get(ch);
-		}
-		return (temp != null && temp.isLeaf);
-	}
-	void delete(Trienode root,String str) {
-		System.out.println("inside delete :"+str);
-		deleteTrinode(root,str,0);
-	}
-
-	private boolean deleteTrinode(Trienode root, String str, int i) {
-		if(root == null) {
-			return false;
-		}
-		if(str.length()==i) {
-			if(!root.isLeaf) {
-				return false;
-			}
-			root.isLeaf = false;
-			return (root.hm.size()==0);
-		}
-		boolean tr = deleteTrinode(root.hm.get(str.charAt(i)), str, i+1);
-		if(tr){
-			root.hm.remove(str.charAt(i));
-			return (root.hm.size()==0);
-		}
-		return false;
-	}	
+class TrieNode {
+    HashMap<Character,TrieNode> child;
+    boolean isLeaf = false;
 }
